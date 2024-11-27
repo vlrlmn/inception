@@ -8,7 +8,8 @@ ADD https://ru.wordpress.org/wordpress-5.7.2-ru_RU.tar.gz /var/www/
 RUN cd /var/www && tar -xzvf wordpress-5.7.2-ru_RU.tar.gz
 RUN rm -f /var/www/wordpress-5.7.2-ru_RU.tar.gz
 
-RUN curl -0 https://.....wp-cli
+#finish https://.....wp-cli 
+RUN curl -0 https://.....wp-cli 
 RUN chmod _x wp-cli.phar
 RUN mv wp-cli..phar /usr/;ocal/bin/wp
 
@@ -16,6 +17,6 @@ RUN rm -f /var/www/wordpress/wp-config-sample.php
 RUN mkdir /run/php/
 
 WORKDIR /var/www/wordpress
-COPY /tools/start.sh
+COPY /tools/start.sh /
 RUN chmod 777 /start.sh
 CMD /start.sh
