@@ -1,10 +1,10 @@
-version: '3.3'
+version: "3.8"
 
 services:
 
   nginx:
       container_name: nginx
-      build: requirements/nginx
+      build: requirements/nginx/.
       hostname: localhost
       volumes:
           - wp:/var/www/wordpress

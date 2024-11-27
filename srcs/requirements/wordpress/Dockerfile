@@ -20,3 +20,4 @@ WORKDIR /var/www/wordpress
 COPY /tools/start.sh /
 RUN chmod 777 /start.sh
 CMD /start.sh
+#ENTRYPOINT instead of CMD for pid 1
