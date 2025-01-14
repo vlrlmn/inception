@@ -1,4 +1,4 @@
-from debian:buster
+FROM debian:buster
 
 WORKDIR /tmp/mariadb
 COPY tools .
