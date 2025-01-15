@@ -1,26 +1,28 @@
-start : #mkdir
-		cd srcs && docker-compose up
-
-restart: clean build run
-
-mkdir:
-		mkdir ~/data ~/data/db ~/data/wp
+all:
+		@echo "Launch configuration...\n"
+		@bash srcs/requirements/wordpress/tools/start.sh
+		@docker compose -f ./srcs/docker-compose.yml --env-file srcs/.env up -d
 
 build:
-		cd srcs && docker-compose build
+		@echo "Building configuration...\n"
+		@bash srcs/requirements/wordpress/tools/start.sh
+		@docker compose -f ./srcs/docker-compose.yml --env-file srcs/.env up -d --build
 
-run:
-		cd srcs && docker-compose up -d
+down:
+		@echo "Stopping configuration...\n"
+		@docker compose -f ./srcs/docker-compose.yml --env-file srcs/.env down
 
-stop:
-		cd srcs && docker-compose stop
+re:
+		@echo "Rebuilding configuration...\n"
+		@docker compose -f ./srcs/docker-compose.yml --env-file srcs/.env up -d --build
 
-ps:
-		cd srcs && docker-compose ps
+clean: 	down
+		@echo "Cleaning configuration...\n"
+		@docker stop $$(docker ps -qa)
+		@docker system prune --all --force --volumes
+		@docker network prune --force
+		@docker volume prune --force
+		@sudo rm -rf ~/data/wordpress/*
+		@sudo rm -rf ~/data/mariadb/*
 
-clean:	stop
-		cd srcs && docker-compose rm
-		rm -rf /tmp/data/db/*
-		rm -rf /tmp/data/wp/*
-		yes | docker system prune -a --force
-		yes | docker volume prune
+.PHONY: all build down re clean fclean
