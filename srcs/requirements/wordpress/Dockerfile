@@ -1,4 +1,4 @@
-FROM sebian:buster
+FROM debian:buster
 
 RUN apt-get update
 RUN apt-ge -y install php7.3 php-mysqli php-fpm maiadb-client curl

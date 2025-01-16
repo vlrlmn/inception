@@ -1,55 +1,58 @@
 services:
 
   nginx:
-      container_name: nginx
-      build: requirements/nginx/.
-      hostname: localhost
-      volumes:
-          - wp:/var/www/wordpress
-      networks:
-          - app-network
-      ports:
-          - "443:443" #out networks only for nginx
-      depends_on:
-          - wordpress #dependance - nginx will launch after wordpress, nginx needs to send requests to wordpress, that's why we need to launch wordpress first
-      restart: always #if container fails it will always relaunch
+        container_name: nginx
+        build: ./srcs/requirements/nginx
+        hostname: nginx.local
+        volumes:
+            - wp:/var/www/html:rw
+        secrets:
+            - server-certificate
+            - server-key  
+        networks:
+            - app-network
+        ports:
+            - "443:443"
+        depends_on:
+            - wordpress
+        restart: always
 
   mariadb:
       container_name: mariadb
-      build: requirements/mariadb
-      hostname: localhost
+      build: ./srcs/requirements/mariadb
+      hostname: mariadb.local
       volumes:
-          - db:/var/lib/mysql
-      environment: # we can connect env file, but we need only some of the vars, that's why we copy only them, it is more correct way
-          DB_NAME: ${DB_NAME}
-          DB_USER: ${DB_USER}
-          DB_PASSWORD: ${DB_PASSWORD}
-          DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+          - db-data:/var/lib/mysql
+      environment:
+          MYSQL_DATABASE: ${DB_NAME}
+          MYSQL_USER: ${DB_USER}
+          MYSQL_PASSWORD: ${DB_PASSWORD}
+          MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       networkd:
           - app-network
       restart: always
 
   wordpress:
       container_name: wordpress
-      build: requirements/wordpress
-      hostname: localhost
+      build: ./srcs/requirements/wordpress
+      hostname: wordpress.local
       volumes:
-          - wp:/var/www/wordpress
+          - wp:/var/www/html:rw
       environment:
-          DB_HOST: ${DB_HOST}
-          DB_NAME: ${DB_NAME}
-          DB_USER: ${DB_USER}
+          WORDPRESS_DB_HOST: mariadb
+          WORDPRESS_DB_NAME: ${DB_NAME}
+          WORDPRESS_DB_USER: ${DB_USER}
           DB_PASSWORD: ${DB_PASSWORD}
+          WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+          WORDPRESS_SITE_URL: https://${DOMAIN_NAME}
           USER_NAME: ${USER_NAME}
           USER_EMAIL: ${USER_EMAIL}
           USER_ADMIN_EMAIL: ${USER_ADMIN_EMAIL}
           DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-          DOMAIN_NAME: ${DOMAIN_NAME}
-          TITLE: ${TITLE}
       networks:
           - app-network
       depends_on:
-          - mariadb #dependance wordpress will launch after mariadb
+          - mariadb
       restart: always
 
 volumes:
@@ -58,18 +61,19 @@ volumes:
         driver_opts:
             type: none
             o: bind
-            device: -/data/db #home directory where locally created the folder
-
+            device: /home/${USER}/data/mariadb
     wp:
         driver: local
         driver_opts:
             type: none
             o: bind
-            device: -/data/wp
+            device: /home/${USER}/data/wordpress
 
 secrets:
     server-certificate:
-        external: true
+            file: ./secrets/nginx/server.crt
+    server-key:
+            file: ./secrets/nginx/key.key
 
 networks:
   app-network:
