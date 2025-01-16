@@ -1,10 +1,12 @@
-FROM debian:buster
+FROM mariadb:10.5
 
-WORKDIR /tmp/mariadb
-COPY tools .
-ARG DB_NAME=$DB_NAME
-ARG DB_USER=$DB_USER
-ARG DB_PASSWORD=$DB_PASSWORD
-RUN chmod +x install.sh && ./install.sh && rm install.sh
-CMD ./start.sh 
-#ENTRYPOINT instead of CMD for pid 1
+ENV MYSQL_ROOT_PASSWORD=${DB_ROOT} \
+    MYSQL_DATABASE=${DB_NAME} \
+    MYSQL_USER=${DB_USER} \
+    MYSQL_PASSWORD=${DB_PASS}
+
+COPY conf/my.cnf /etc/mysql/my.cnf
+
+COPY tools/*sql /docker-entrypoint-initdb.d/
+
+EXPOSE 3306
