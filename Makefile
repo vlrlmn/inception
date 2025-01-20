@@ -1,28 +1,36 @@
-all:
-		@echo "Launch configuration...\n"
-		@bash srcs/requirements/wordpress/tools/start.sh
-		@docker compose -f ./srcs/docker-compose.yml --env-file srcs/.env up -d
+SRC_DIR=./srcs
+DOCKER_COMPOSE_FILE=$(SRC_DIR)/docker-compose.yml
+DATA_DIR=/home/${USER}/data
+
+all: up
 
 build:
-		@echo "Building configuration...\n"
-		@bash srcs/requirements/wordpress/tools/start.sh
-		@docker compose -f ./srcs/docker-compose.yml --env-file srcs/.env up -d --build
+	@echo "Building docker images..."
+	@docker-compose -f $(DOCKER_COMPOSE_FILE) up -d --build
+
+up: directories
+	@echo "Starting up services..."
+	@docker-compose -f $(DOCKER_COMPOSE_FILE) up -d
 
 down:
-		@echo "Stopping configuration...\n"
-		@docker compose -f ./srcs/docker-compose.yml --env-file srcs/.env down
+	@echo "Stopping services..."
+	@docker-compose -f $(DOCKER_COMPOSE_FILE) down
 
-re:
-		@echo "Rebuilding configuration...\n"
-		@docker compose -f ./srcs/docker-compose.yml --env-file srcs/.env up -d --build
+clean: down
+	@echo "Cleaning up..."
+	@docker-compose -f $(DOCKER_COMPOSE_FILE) down --volumes --remove-orphans
+	@docker system prune -f
+	@docker volume prune -f
+	@rm -rf $(DATA_DIR)/wordpress
+	@rm -rf $(DATA_DIR)/mariadb
 
-clean: 	down
-		@echo "Cleaning configuration...\n"
-		@docker stop $$(docker ps -qa)
-		@docker system prune --all --force --volumes
-		@docker network prune --force
-		@docker volume prune --force
-		@sudo rm -rf ~/data/wordpress/*
-		@sudo rm -rf ~/data/mariadb/*
+fclean: clean
+	@echo "Removing all Docker containers, images, and volumes..."
+	@docker system prune -a -f --volumes
 
-.PHONY: all build down re clean fclean
+directories:
+	@echo "Creating directories for database and WordPress..."
+	@mkdir -p $(DATA_DIR)/mariadb
+	@mkdir -p $(DATA_DIR)/wordpress
+
+.PHONY: all build up down clean fclean directories
