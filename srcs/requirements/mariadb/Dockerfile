@@ -1,6 +1,6 @@
-FROM alpine:3.17.4
+FROM alpine:3.19
 
-ARG DB_NAME DB_USER DB_PASS
+ARG MYSQL_NAME MYSQL_USER DB_PASS
 
 RUN apk add --no-cache mariadb mariadb-client \
 	&& rm -rf /var/cache/apk/* \
@@ -11,4 +11,4 @@ EXPOSE 3306
 COPY conf/my.cnf /etc/my.cnf
 COPY tools/setup.sh /usr/local/bin/setup.sh
 
-CMD ["/bin/sh", "/usr/local/bin/init-database.sh"]
+CMD ["/bin/sh", "/usr/local/bin/setup.sh"]

@@ -1,73 +1,60 @@
+
 services:
-
   nginx:
-        container_name: nginx
-        build: ./srcs/requirements/nginx
-        hostname: nginx.local
-        volumes:
-            - wp:/var/www/html:rw
-        secrets:
-            - server-certificate
-            - server-key  
-        networks:
-            - app-network
-        ports:
-            - "443:443"
-        depends_on:
-            - wordpress
-        restart: always
-
-  mariadb:
-      container_name: mariadb
-      build: ./srcs/requirements/mariadb
-      hostname: mariadb.local
-      volumes:
-          - db-data:/var/lib/mysql
-      environment:
-          MYSQL_DATABASE: ${DB_NAME}
-          MYSQL_USER: ${DB_USER}
-          MYSQL_PASSWORD: ${DB_PASSWORD}
-          MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      networkd:
-          - app-network
-      restart: always
+    build: requirements/nginx/
+    container_name: nginx
+    networks:
+      - app-network
+    restart: on-failure
+    volumes:
+      - WPDB:/var/www
+    ports:
+      - 443:443
+    depends_on:
+        - wordpress
+    env_file:
+      - ./.env
+    
 
   wordpress:
+      build: requirements/wordpress/
       container_name: wordpress
-      build: ./srcs/requirements/wordpress
-      hostname: wordpress.local
-      volumes:
-          - wp:/var/www/html:rw
-      environment:
-          WORDPRESS_DB_HOST: mariadb
-          WORDPRESS_DB_NAME: ${DB_NAME}
-          WORDPRESS_DB_USER: ${DB_USER}
-          DB_PASSWORD: ${DB_PASSWORD}
-          WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
-          WORDPRESS_SITE_URL: https://${DOMAIN_NAME}
-          USER_NAME: ${USER_NAME}
-          USER_EMAIL: ${USER_EMAIL}
-          USER_ADMIN_EMAIL: ${USER_ADMIN_EMAIL}
-          DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       networks:
-          - app-network
+        - app-network
+      restart: on-failure
+      volumes:
+        - WPDB:/var/www
+      ports:
+        - 9000:9000
       depends_on:
-          - mariadb
-      restart: always
+        - mariadb
+      env_file:
+        - ./.env
+
+  mariadb:
+    build: requirements/mariadb/
+    container_name: mariadb
+    networks:
+      - app-network
+    restart: on-failure
+    volumes:
+      - DB:/var/lib/mysql
+    ports:
+      - 3306:3306
+    env_file:
+      - ./.env
 
 volumes:
-    db-data:
-        driver: local
-        driver_opts:
-            type: none
-            o: bind
-            device: /home/${USER}/data/mariadb
-    wp:
-        driver: local
-        driver_opts:
-            type: none
-            o: bind
-            device: /home/${USER}/data/wordpress
+  DB: 
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/$USER/data/mariadb
+  WPDB: 
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/$USER/data/wordpress
 
 secrets:
     server-certificate:
