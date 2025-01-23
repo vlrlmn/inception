@@ -22,7 +22,7 @@ echo 'listen.owner = nobody' >> /etc/php81/php-fpm.d/www.conf
 echo 'listen.group = nobody' >> /etc/php81/php-fpm.d/www.conf
 
 wp --allow-root --path=/var/www/html/wordpress core install \
-	--url='vlomakin.42.fr' --title='WordPress' \
+	--url='https://vlomakin.42.fr' --title='WordPress' \
 	--skip-email --admin_email="${WP_EMAIL1}" \
 	--admin_user="$WP_USER1" \
 	--admin_password="$WP_PASSWORD1"
