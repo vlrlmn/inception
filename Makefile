@@ -1,6 +1,7 @@
 SRC_DIR=./srcs
 DOCKER_COMPOSE_FILE=$(SRC_DIR)/docker-compose.yml
-DATA_DIR=/home/${USER}/data
+DATA_DIR=${HOME}/data
+
 
 all: up
 
@@ -30,7 +31,9 @@ fclean: clean
 
 directories:
 	@echo "Creating directories for database and WordPress..."
-	@mkdir -p $(DATA_DIR)/mariadb
-	@mkdir -p $(DATA_DIR)/wordpress
+	mkdir -p $(DATA_DIR)/mariadb
+	mkdir -p $(DATA_DIR)/wordpress
 
+re: fclean
+	$(MAKE) up
 .PHONY: all build up down clean fclean directories
