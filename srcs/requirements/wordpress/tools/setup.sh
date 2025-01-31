@@ -17,9 +17,9 @@ sed -i "s/'username_here'/'$MYSQL_USER'/g" wp-config.php
 sed -i "s/'password_here'/'$MYSQL_PASSWORD'/g" wp-config.php
 sed -i "s/'localhost'/'mariadb'/g" wp-config.php
 
-sed -i "s|listen = 127.0.0.1:9000|listen = 9000|g" /etc/php81/php-fpm.d/www.conf
-echo 'listen.owner = nobody' >> /etc/php81/php-fpm.d/www.conf
-echo 'listen.group = nobody' >> /etc/php81/php-fpm.d/www.conf
+sed -i "s|listen = 127.0.0.1:9000|listen = 9000|g" /etc/php83/php-fpm.d/www.conf
+echo 'listen.owner = nobody' >> /etc/php83/php-fpm.d/www.conf
+echo 'listen.group = nobody' >> /etc/php83/php-fpm.d/www.conf
 
 wp --allow-root --path=/var/www/html/wordpress core install \
 	--url='https://vlomakin.42.fr' --title='WordPress' \
@@ -32,5 +32,5 @@ wp --allow-root user create $WP_USER2 "${WP_EMAIL2}" --user_pass=$WP_PASSWORD2 -
 chmod -R 777 /var/www/html/wordpress
 
 if [ -f /var/www/html/wordpress/wp-config.php ]; then
-	php-fpm81 --nodaemonize
+	php-fpm83 --nodaemonize
 fi
