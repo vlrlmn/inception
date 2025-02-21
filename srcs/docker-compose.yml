@@ -49,12 +49,12 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: /Users/lomakinavaleria/data/mariadb
+      device: /home/vlomakin/data/mariadb
   WPDB:
     driver_opts:
       o: bind
       type: none
-      device: /Users/lomakinavaleria/data/wordpress
+      device: /home/vlomakin/data/wordpress
 
 secrets:
     server-certificate:
