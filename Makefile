@@ -22,8 +22,8 @@ clean: down
 	@docker-compose -f $(DOCKER_COMPOSE_FILE) down --volumes --remove-orphans
 	@docker system prune -f
 	@docker volume prune -f
-	@rm -rf $(DATA_DIR)/wordpress
-	@rm -rf $(DATA_DIR)/mariadb
+	@sudo rm -rf $(DATA_DIR)/wordpress
+	@sudo rm -rf $(DATA_DIR)/mariadb
 
 fclean: clean
 	@echo "Removing all Docker containers, images, and volumes..."

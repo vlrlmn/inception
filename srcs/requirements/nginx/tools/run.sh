@@ -13,7 +13,7 @@ fi
 
 echo "server {
     listen 443 ssl;
-    server_name https://vlomakin.42.fr vlomakin.42.fr;
+    server_name vlomakin.42.fr;
     root /var/www/html/wordpress;
     index index.php;
     ssl_protocols TLSv1.2 TLSv1.3;

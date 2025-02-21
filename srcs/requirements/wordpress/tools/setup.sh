@@ -6,10 +6,12 @@ mv wp-cli.phar /usr/local/bin/wp
 
 mkdir -p /var/www/html/wordpress
 cd /var/www/html/wordpress
+chmod 777 -R /var/www/html/wordpress
+
+sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php83/php.ini
 
 wp --allow-root core download --force
 
-chmod 777 -R /var/www/html/wordpress
 mv wp-config-sample.php wp-config.php
 
 sed -i "s/'database_name_here'/'$MYSQL_NAME'/g" wp-config.php
