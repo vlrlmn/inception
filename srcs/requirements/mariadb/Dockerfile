@@ -2,12 +2,10 @@ FROM alpine:3.20
 
 ARG MYSQL_NAME MYSQL_USER MYSQL_PASSWORD
 
-RUN apk add --no-cache mariadb mariadb-client \
-	&& rm -rf /var/cache/apk/* \
-	&& mysql_install_db --verbose --user=mysql --datadir=/var/lib/mysql;
+RUN apk add --no-cache mariadb mariadb-client && \
+    rm -rf /var/cache/apk/*
 
-RUN  mkdir /var/run/mysqld; \
-	chmod 777 /var/run/mysqld
+RUN mkdir -p /run/mysqld && chown -R mysql:mysql /run/mysqld
 
 EXPOSE 3306
 
